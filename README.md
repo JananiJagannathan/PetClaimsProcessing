@@ -40,7 +40,7 @@ This application demonstrates how pet insurance providers can efficiently manage
 
 ## Database
 
-- SQL Server
+- SQLite
 
 ---
 
