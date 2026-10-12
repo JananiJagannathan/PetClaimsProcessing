@@ -25,11 +25,11 @@
 }
 
 .back-link {
-  color: #2563eb;
+  font-size: 40px;
+  line-height: 1;
   text-decoration: none;
-  font-size: 14px;
+  color: #2563eb;
 }
-
 .layout {
   display: grid;
   grid-template-columns:

@@ -38,12 +38,10 @@
 }
 
 .back-link {
-  color: #2563eb;
-
+  font-size: 40px;
+  line-height: 1;
   text-decoration: none;
-
-  font-size: 14px;
-  font-weight: 600;
+  color: #2563eb;
 }
 
 .back-link:hover {

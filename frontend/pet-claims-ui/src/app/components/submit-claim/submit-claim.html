@@ -10,7 +10,7 @@
         routerLink="/dashboard"
         class="back-link"
       >
-        ← Dashboard
+        ← 
       </a>
 
       <h1>Submit Claim</h1>
@@ -474,31 +474,57 @@
 
           <!-- INVOICE NUMBER -->
 
-          <div class="field">
+<!-- INVOICE NUMBER -->
 
-            <label>
-              Invoice Number *
-            </label>
+<div class="field">
 
-            <input
-              type="text"
-              formControlName="invoiceNumber"
-              placeholder="Unique invoice number"
-            />
+  <label>
+    Invoice Number *
+  </label>
 
+  <input
+    type="text"
+    formControlName="invoiceNumber"
+    placeholder="Unique invoice number"
+  />
 
-            @if (
-              f.invoiceNumber.touched &&
-              f.invoiceNumber.hasError('required')
-            ) {
+  @if (
+    f.invoiceNumber.touched &&
+    f.invoiceNumber.hasError('required')
+  ) {
+    <small class="validation-error">
+      Invoice number is required.
+    </small>
+  }
 
-              <small class="validation-error">
-                Invoice number is required.
-              </small>
+  @if (
+    f.invoiceNumber.touched &&
+    f.invoiceNumber.hasError('minlength')
+  ) {
+    <small class="validation-error">
+      Invoice number must contain at least 3 characters.
+    </small>
+  }
 
-            }
+  @if (
+    f.invoiceNumber.touched &&
+    f.invoiceNumber.hasError('maxlength')
+  ) {
+    <small class="validation-error">
+      Invoice number cannot exceed 50 characters.
+    </small>
+  }
 
-          </div>
+  @if (
+    f.invoiceNumber.touched &&
+    f.invoiceNumber.hasError('pattern')
+  ) {
+    <small class="validation-error">
+      Only letters, numbers and hyphens are allowed.
+    </small>
+  }
+
+</div>
 
 
           <!-- DOCUMENT NAME -->

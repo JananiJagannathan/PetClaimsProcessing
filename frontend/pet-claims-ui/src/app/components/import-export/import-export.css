@@ -3,6 +3,7 @@
   padding: 32px;
   background: #f5f7fb;
   color: #1f2937;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .header {
@@ -13,17 +14,20 @@
   margin: 8px 0;
   color: #16325c;
   font-size: 30px;
+  font-weight: 700;
 }
 
 .header p {
   color: #64748b;
   margin: 0;
+  font-size: 15px;
 }
 
 .back-link {
+  font-size: 40px;
+  line-height: 1;
   text-decoration: none;
   color: #2563eb;
-  font-weight: 600;
 }
 
 .layout {
@@ -33,24 +37,38 @@
 }
 
 .card {
-  background: white;
+  background: #ffffff;
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
 }
 
 .card h2 {
   margin-top: 0;
+  margin-bottom: 12px;
   color: #16325c;
+  font-size: 22px;
+  font-weight: 600;
 }
 
 .card p {
   color: #64748b;
+  margin-bottom: 16px;
+  line-height: 1.5;
 }
 
 input[type="file"] {
   width: 100%;
   margin: 12px 0 16px;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
 }
 
 .export-button,
@@ -63,6 +81,7 @@ input[type="file"] {
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .export-button {
@@ -70,15 +89,27 @@ input[type="file"] {
   color: white;
 }
 
+.export-button:hover {
+  background: #1d4ed8;
+}
+
 .import-button {
   background: #16a34a;
   color: white;
+}
+
+.import-button:hover {
+  background: #15803d;
 }
 
 .dashboard-button {
   background: #16325c;
   color: white;
   display: inline-block;
+}
+
+.dashboard-button:hover {
+  background: #0f2443;
 }
 
 .validation-error {
@@ -102,9 +133,15 @@ input[type="file"] {
 }
 
 @media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
 
   .layout {
     grid-template-columns: 1fr;
   }
 
+  .header h1 {
+    font-size: 24px;
+  }
 }

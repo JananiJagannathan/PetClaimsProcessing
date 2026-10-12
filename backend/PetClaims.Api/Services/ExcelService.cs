@@ -221,10 +221,6 @@ if (worksheet == null)
                     .AsNoTracking()
                     .ToListAsync();
 
-            var claimItems =
-                await _context.ClaimItems
-                    .AsNoTracking()
-                    .ToListAsync();
 
             var claimDecisions =
                 await _context.ClaimDecisions
@@ -246,10 +242,6 @@ if (worksheet == null)
                 workbook,
                 claims);
 
-            CreateClaimItemsSheet(
-                workbook,
-                claimItems,
-                claims);
 
             CreateClaimDecisionsSheet(
                 workbook,
@@ -441,57 +433,7 @@ if (worksheet == null)
             sheet.Columns().AdjustToContents();
         }
 
-        // --------------------------------------------------
-        // CLAIM ITEMS SHEET
-        // --------------------------------------------------
 
-        private static void CreateClaimItemsSheet(
-            XLWorkbook workbook,
-            List<ClaimItem> items,
-            List<Claim> claims)
-        {
-            var sheet =
-                workbook.Worksheets.Add(
-                    "ClaimItems");
-
-            sheet.Cell(1, 1).Value =
-                "ClaimNumber";
-
-            sheet.Cell(1, 2).Value =
-                "Description";
-
-            sheet.Cell(1, 3).Value =
-                "Amount";
-
-            sheet.Cell(1, 4).Value =
-                "Eligible";
-
-            var row = 2;
-
-            foreach (var item in items)
-            {
-                var claim =
-                    claims.FirstOrDefault(
-                        c => c.ClaimId ==
-                             item.ClaimId);
-
-                sheet.Cell(row, 1).Value =
-                    claim?.ClaimNumber ?? "";
-
-                sheet.Cell(row, 2).Value =
-                    item.Description;
-
-                sheet.Cell(row, 3).Value =
-                    item.Amount;
-
-                sheet.Cell(row, 4).Value =
-                    item.Eligible;
-
-                row++;
-            }
-
-            sheet.Columns().AdjustToContents();
-        }
 
         // --------------------------------------------------
         // CLAIM DECISIONS SHEET
