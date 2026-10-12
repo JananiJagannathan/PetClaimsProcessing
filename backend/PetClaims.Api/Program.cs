@@ -3,7 +3,6 @@ using PetClaims.Api.Data;
 using PetClaims.Api.Repositories;
 using PetClaims.Api.Services;
 using PetClaims.Api.Middleware;
-using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +35,6 @@ builder.Services.AddScoped<IClaimRepository, ClaimRepository>();
 
 builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
 
-
 // --------------------------------------------------
 // SERVICES
 // --------------------------------------------------
@@ -44,7 +42,30 @@ builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
 builder.Services.AddScoped<IClaimService, ClaimService>();
 
 builder.Services.AddScoped<IPolicyService, PolicyService>();
+
 builder.Services.AddScoped<IExcelService, ExcelService>();
+
+// --------------------------------------------------
+// CORS - ANGULAR FRONTEND
+// --------------------------------------------------
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "AngularClient",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+// --------------------------------------------------
+// BUILD APPLICATION
+// --------------------------------------------------
+
 var app = builder.Build();
 
 // --------------------------------------------------
@@ -54,13 +75,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    
 
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint(
             "/openapi/v1.json",
             "Pet Claims API v1");
+
         options.DefaultModelsExpandDepth(-1);
     });
 }
@@ -73,6 +94,16 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // HTTPS temporarily disabled for local development
 // app.UseHttpsRedirection();
+
+// --------------------------------------------------
+// CORS
+// --------------------------------------------------
+
+app.UseCors("AngularClient");
+
+// --------------------------------------------------
+// AUTHORIZATION
+// --------------------------------------------------
 
 app.UseAuthorization();
 
@@ -89,9 +120,14 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context =
-        scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        scope.ServiceProvider
+            .GetRequiredService<AppDbContext>();
 
     await DbSeeder.SeedAsync(context);
 }
+
+// --------------------------------------------------
+// RUN APPLICATION
+// --------------------------------------------------
 
 app.Run();

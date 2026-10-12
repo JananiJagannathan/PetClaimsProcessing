@@ -1,0 +1,707 @@
+<div class="page">
+
+  <!-- PAGE HEADER -->
+
+  <div class="page-header">
+
+    <div>
+
+      <a
+        routerLink="/dashboard"
+        class="back-link"
+      >
+        ← Dashboard
+      </a>
+
+      <h1>Submit Claim</h1>
+
+      <p>
+        Check policy eligibility and register
+        a new pet insurance claim.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="layout">
+
+    <!-- ========================================= -->
+    <!-- CLAIM FORM -->
+    <!-- ========================================= -->
+
+    <section class="form-card">
+
+      <form
+        [formGroup]="claimForm"
+        (ngSubmit)="submitClaim()"
+      >
+
+        <!-- ===================================== -->
+        <!-- POLICY INFORMATION -->
+        <!-- ===================================== -->
+
+        <h2>Policy Information</h2>
+
+
+        <div class="policy-row">
+
+          <div class="field">
+
+            <label>
+              Policy Number *
+            </label>
+
+            <input
+              type="text"
+              formControlName="policyNumber"
+              placeholder="Example: POL001"
+            />
+
+
+            @if (
+              f.policyNumber.touched &&
+              f.policyNumber.hasError('required')
+            ) {
+
+              <small class="validation-error">
+                Policy number is required.
+              </small>
+
+            }
+
+
+            @if (
+              f.policyNumber.touched &&
+              f.policyNumber.hasError('pattern')
+            ) {
+
+              <small class="validation-error">
+                Policy number must follow the format POL001.
+              </small>
+
+            }
+
+          </div>
+
+
+          <button
+            type="button"
+            class="check-button"
+            (click)="checkPolicy()"
+            [disabled]="checkingPolicy"
+          >
+
+            @if (checkingPolicy) {
+
+              Checking...
+
+            } @else {
+
+              Check Policy
+
+            }
+
+          </button>
+
+        </div>
+
+
+      
+
+        <!-- POLICY ELIGIBILITY -->
+
+@if (
+  policy &&
+  policy.status.toLowerCase() === 'active'
+) {
+
+  <div class="eligibility">
+
+    <div class="eligible-title">
+      ✅ Policy Eligible
+    </div>
+
+    <div class="policy-grid">
+
+      <div>
+        <span>Pet Name</span>
+        <strong>{{ policy.petName }}</strong>
+      </div>
+
+      <div>
+        <span>Pet Type</span>
+        <strong>{{ policy.petType }}</strong>
+      </div>
+
+      <div>
+        <span>Breed</span>
+        <strong>{{ policy.breed }}</strong>
+      </div>
+
+      <div>
+        <span>Status</span>
+        <strong>{{ policy.status }}</strong>
+      </div>
+
+      <div>
+        <span>Coverage</span>
+        <strong>{{ policy.coverage }}</strong>
+      </div>
+
+      <div>
+        <span>Policy Period</span>
+        <strong>
+          {{ policy.startDate | date:'dd MMM yyyy' }}
+          -
+          {{ policy.endDate | date:'dd MMM yyyy' }}
+        </strong>
+      </div>
+
+      <div>
+        <span>Annual Limit</span>
+        <strong>
+          {{
+            policy.annualLimit
+            | currency:'USD':'symbol':'1.0-0'
+          }}
+        </strong>
+      </div>
+
+      <div>
+        <span>Deductible</span>
+        <strong>
+          {{
+            policy.deductible
+            | currency:'USD':'symbol':'1.0-0'
+          }}
+        </strong>
+      </div>
+
+      <div>
+        <span>Reimbursement</span>
+        <strong>
+          {{ policy.reimbursementPercentage }}%
+        </strong>
+      </div>
+
+    </div>
+
+  </div>
+
+}
+
+@if (
+  policy &&
+  policy.status.toLowerCase() !== 'active'
+) {
+
+  <div class="policy-ineligible">
+
+    <div class="ineligible-title">
+      ❌ Policy Not Eligible
+    </div>
+
+    <div class="policy-grid">
+
+      <div>
+        <span>Pet Name</span>
+        <strong>{{ policy.petName }}</strong>
+      </div>
+
+      <div>
+        <span>Pet Type</span>
+        <strong>{{ policy.petType }}</strong>
+      </div>
+
+      <div>
+        <span>Breed</span>
+        <strong>{{ policy.breed }}</strong>
+      </div>
+
+      <div>
+        <span>Status</span>
+        <strong>{{ policy.status }}</strong>
+      </div>
+
+      <div>
+        <span>Coverage</span>
+        <strong>{{ policy.coverage }}</strong>
+      </div>
+
+      <div>
+        <span>Policy Period</span>
+        <strong>
+          {{ policy.startDate | date:'dd MMM yyyy' }}
+          -
+          {{ policy.endDate | date:'dd MMM yyyy' }}
+        </strong>
+      </div>
+
+      <div>
+        <span>Annual Limit</span>
+        <strong>
+          {{
+            policy.annualLimit
+            | currency:'USD':'symbol':'1.0-0'
+          }}
+        </strong>
+      </div>
+
+      <div>
+        <span>Deductible</span>
+        <strong>
+          {{
+            policy.deductible
+            | currency:'USD':'symbol':'1.0-0'
+          }}
+        </strong>
+      </div>
+
+      <div>
+        <span>Reimbursement</span>
+        <strong>
+          {{ policy.reimbursementPercentage }}%
+        </strong>
+      </div>
+
+    </div>
+
+   <div class="warning-text">
+  Claims cannot be submitted because this policy is expired.
+</div>
+
+  </div>
+
+}
+
+
+
+        <!-- PET NAME -->
+
+        <div class="field">
+
+          <label>
+            Pet Name
+          </label>
+
+          <input
+            type="text"
+            formControlName="petName"
+            placeholder="Loaded from policy"
+          />
+
+          <small class="helper">
+            Pet name is loaded automatically after
+            checking the policy.
+          </small>
+
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- TREATMENT INFORMATION -->
+        <!-- ===================================== -->
+
+        <h2>Treatment Information</h2>
+
+
+        <div class="form-grid">
+
+
+          <!-- TREATMENT DATE -->
+
+          <div class="field">
+
+            <label>
+              Treatment Date *
+            </label>
+
+            <input
+              type="date"
+              formControlName="treatmentDate"
+            />
+
+
+            @if (
+              f.treatmentDate.touched &&
+              f.treatmentDate.hasError('required')
+            ) {
+
+              <small class="validation-error">
+                Treatment date is required.
+              </small>
+
+            }
+
+
+            @if (
+              f.treatmentDate.touched &&
+              isTreatmentDateOutsidePolicy()
+            ) {
+
+              <small class="validation-error">
+                Treatment date must be within
+                the policy period.
+              </small>
+
+            }
+
+          </div>
+
+
+          <!-- CLINIC -->
+
+          <div class="field">
+
+            <label>
+              Clinic *
+            </label>
+
+            <input
+              type="text"
+              formControlName="clinic"
+              placeholder="Veterinary clinic"
+            />
+
+
+            @if (
+              f.clinic.touched &&
+              f.clinic.hasError('required')
+            ) {
+
+              <small class="validation-error">
+                Clinic is required.
+              </small>
+
+            }
+
+
+            @if (
+              f.clinic.touched &&
+              f.clinic.hasError('minlength')
+            ) {
+
+              <small class="validation-error">
+                Clinic must contain at least
+                2 characters.
+              </small>
+
+            }
+
+          </div>
+
+
+          <!-- DIAGNOSIS -->
+
+          <div class="field">
+
+            <label>
+              Diagnosis *
+            </label>
+
+            <input
+              type="text"
+              formControlName="diagnosis"
+              placeholder="Diagnosis"
+            />
+
+
+            @if (
+              f.diagnosis.touched &&
+              f.diagnosis.hasError('required')
+            ) {
+
+              <small class="validation-error">
+                Diagnosis is required.
+              </small>
+
+            }
+
+
+            @if (
+              f.diagnosis.touched &&
+              f.diagnosis.hasError('minlength')
+            ) {
+
+              <small class="validation-error">
+                Diagnosis must contain at least
+                2 characters.
+              </small>
+
+            }
+
+          </div>
+
+
+          <!-- CLAIMED AMOUNT -->
+
+          <div class="field">
+
+            <label>
+              Claimed Amount *
+            </label>
+
+            <input
+              type="number"
+              min="0.01"
+              step="0.01"
+              formControlName="claimedAmount"
+            />
+
+
+            @if (
+  f.claimedAmount.touched &&
+  f.claimedAmount.hasError('required')
+) {
+  <small class="validation-error">
+    Claimed amount is required.
+  </small>
+}
+
+@if (
+  f.claimedAmount.touched &&
+  f.claimedAmount.hasError('min')
+) {
+  <small class="validation-error">
+    Claimed amount must be greater than zero.
+  </small>
+}
+
+          </div>
+
+
+          <!-- INVOICE NUMBER -->
+
+          <div class="field">
+
+            <label>
+              Invoice Number *
+            </label>
+
+            <input
+              type="text"
+              formControlName="invoiceNumber"
+              placeholder="Unique invoice number"
+            />
+
+
+            @if (
+              f.invoiceNumber.touched &&
+              f.invoiceNumber.hasError('required')
+            ) {
+
+              <small class="validation-error">
+                Invoice number is required.
+              </small>
+
+            }
+
+          </div>
+
+
+          <!-- DOCUMENT NAME -->
+
+          <div class="field">
+
+            <label>
+              Document Name
+            </label>
+
+            <input
+              type="text"
+              formControlName="documentName"
+              placeholder="Example: invoice.pdf"
+            />
+
+            <small class="helper">
+              Optional
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- TREATMENT DESCRIPTION -->
+        <!-- ===================================== -->
+
+        <div class="field">
+
+          <label>
+            Treatment Description *
+          </label>
+
+          <textarea
+            rows="4"
+            formControlName="treatmentDescription"
+            placeholder="Describe the treatment"
+          ></textarea>
+
+
+          @if (
+            f.treatmentDescription.touched &&
+            f.treatmentDescription.hasError('required')
+          ) {
+
+            <small class="validation-error">
+              Treatment description is required.
+            </small>
+
+          }
+
+
+          @if (
+            f.treatmentDescription.touched &&
+            f.treatmentDescription.hasError('minlength')
+          ) {
+
+            <small class="validation-error">
+              Treatment description must contain
+              at least 3 characters.
+            </small>
+
+          }
+
+        </div>
+
+
+        <!-- ===================================== -->
+        <!-- BACKEND / SUBMISSION ERROR -->
+        <!-- ===================================== -->
+
+        @if (submitError) {
+
+          <div class="alert error">
+            {{ submitError }}
+          </div>
+
+        }
+
+
+        <!-- ===================================== -->
+        <!-- FORM ACTIONS -->
+        <!-- ===================================== -->
+
+        <div class="form-actions">
+
+          <a
+            routerLink="/dashboard"
+            class="cancel-button"
+          >
+            Cancel
+          </a>
+
+
+          <button
+            type="submit"
+            class="submit-button"
+            [disabled]="submitting"
+          >
+
+            @if (submitting) {
+
+              Submitting...
+
+            } @else {
+
+              Submit Claim
+
+            }
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- HELP / SUCCESS PANEL -->
+    <!-- ========================================= -->
+
+    <aside class="side-panel">
+
+      <h2>
+        How it works
+      </h2>
+
+
+      <ol>
+
+        <li>
+          Enter the policy number.
+        </li>
+
+        <li>
+          Check policy eligibility.
+        </li>
+
+        <li>
+          Complete treatment and invoice details.
+        </li>
+
+        <li>
+          Submit the claim.
+        </li>
+
+        <li>
+          The claim starts with
+          <strong>Submitted</strong> status.
+        </li>
+
+      </ol>
+
+
+      <!-- SUCCESS -->
+
+      @if (successClaim) {
+
+        <div class="success-box">
+
+          <div class="success-icon">
+            ✓
+          </div>
+
+
+          <h3>
+            ✅ Claim Submitted Successfully
+          </h3>
+
+
+          <p>
+            Claim Number
+          </p>
+
+
+          <strong class="success-number">
+            {{ successClaim.claimNumber }}
+          </strong>
+
+
+          <p>
+            Status:
+            <b>
+              {{ successClaim.status }}
+            </b>
+          </p>
+
+
+          <p>
+            Your claim has been submitted
+            successfully and is ready for review.
+          </p>
+
+        </div>
+
+      }
+
+    </aside>
+
+  </div>
+
+</div>

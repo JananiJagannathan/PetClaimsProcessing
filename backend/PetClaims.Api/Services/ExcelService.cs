@@ -25,14 +25,22 @@ namespace PetClaims.Api.Services
             using var workbook =
                 new XLWorkbook(fileStream);
 
-            if (!workbook.Worksheets.Contains("Claims"))
-            {
-                throw new BusinessException(
-                    "Workbook must contain a Claims sheet.");
-            }
+            foreach (var ws in workbook.Worksheets)
+{
+    Console.WriteLine($"Sheet Name: '{ws.Name}'");
+}
 
-            var worksheet =
-                workbook.Worksheet("Claims");
+var worksheet = workbook.Worksheets
+    .FirstOrDefault(w =>
+        w.Name.Trim().Equals(
+            "Claims",
+            StringComparison.OrdinalIgnoreCase));
+
+if (worksheet == null)
+{
+    throw new BusinessException(
+        "Workbook must contain a Claims sheet.");
+}
 
             var importedCount = 0;
 
@@ -61,7 +69,7 @@ namespace PetClaims.Api.Services
 
                 var documentName =
                     row.Cell(8).GetString().Trim();
-
+                
                 // ------------------------------------------
                 // Validate Policy
                 // ------------------------------------------
@@ -260,6 +268,8 @@ namespace PetClaims.Api.Services
 
             return stream.ToArray();
         }
+
+        
 
         // --------------------------------------------------
         // POLICIES SHEET

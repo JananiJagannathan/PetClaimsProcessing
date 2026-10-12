@@ -1,0 +1,414 @@
+<div class="page">
+
+  <!-- HEADER -->
+
+  <header class="header">
+    <div>
+      <h1>🐾 Pet Claims Processing</h1>
+      <p>Claims Dashboard</p>
+    </div>
+  </header>
+
+
+  <!-- ERROR MESSAGE -->
+
+  @if (errorMessage) {
+    <div class="error">
+      {{ errorMessage }}
+    </div>
+  }
+
+
+  <!-- DASHBOARD CARDS -->
+
+  @if (dashboard) {
+
+    <section class="summary-grid">
+
+      <div class="card submitted">
+        <span>Submitted</span>
+
+        <strong>
+          {{ dashboard.submittedCount }}
+        </strong>
+      </div>
+
+
+      <div class="card review">
+        <span>Under Review</span>
+
+        <strong>
+          {{ dashboard.underReviewCount }}
+        </strong>
+      </div>
+
+
+      <div class="card approved">
+        <span>Approved</span>
+
+        <strong>
+          {{ dashboard.approvedCount }}
+        </strong>
+      </div>
+
+
+      <div class="card rejected">
+        <span>Rejected</span>
+
+        <strong>
+          {{ dashboard.rejectedCount }}
+        </strong>
+      </div>
+
+
+      <div class="card partial">
+        <span>Partially Approved</span>
+
+        <strong>
+          {{ dashboard.partiallyApprovedCount }}
+        </strong>
+      </div>
+
+
+      <div class="card information">
+        <span>More Information</span>
+
+        <strong>
+          {{ dashboard.moreInformationRequiredCount }}
+        </strong>
+      </div>
+
+    </section>
+
+
+    <!-- AMOUNT CARDS -->
+
+    <section class="amount-grid">
+
+      <div class="amount-card">
+
+        <span>Total Claimed</span>
+
+        <strong>
+          {{
+            dashboard.totalClaimedAmount
+            | currency:'USD':'symbol':'1.0-0'
+          }}
+        </strong>
+
+      </div>
+
+
+      <div class="amount-card">
+
+        <span>Total Approved</span>
+
+        <strong>
+          {{
+            dashboard.totalApprovedAmount
+            | currency:'USD':'symbol':'1.0-0'
+          }}
+        </strong>
+
+      </div>
+
+    </section>
+
+  }
+
+
+  <!-- QUICK ACTIONS -->
+
+<section class="quick-actions">
+
+  <div class="quick-heading">
+
+    <h2>Quick Actions</h2>
+
+    <p>
+      Common claim processing tasks
+    </p>
+
+  </div>
+
+  <div class="quick-grid">
+
+    <!-- SUBMIT CLAIM -->
+
+    <a
+      routerLink="/submit-claim"
+      class="quick-card submit-action"
+    >
+
+      <div class="quick-icon">
+        +
+      </div>
+
+      <div>
+
+        <strong>
+          Submit New Claim
+        </strong>
+
+        <span>
+          Register a new pet insurance claim
+        </span>
+
+      </div>
+
+    </a>
+
+    <!-- REPORTS -->
+
+    <a
+      routerLink="/reports"
+      class="quick-card report-action"
+    >
+
+      <div class="quick-icon">
+        ▥
+      </div>
+
+      <div>
+
+        <strong>
+          History & Reports
+        </strong>
+
+        <span>
+          Search claims and view reports
+        </span>
+
+      </div>
+
+    </a>
+
+    <!-- IMPORT / EXPORT -->
+
+    <a
+      routerLink="/import-export"
+      class="quick-card refresh-action"
+    >
+
+      <div class="quick-icon">
+        📊
+      </div>
+
+      <div>
+
+        <strong>
+          Import & Export
+        </strong>
+
+        <span>
+          Manage Excel files
+        </span>
+
+      </div>
+
+    </a>
+
+  </div>
+
+</section>
+
+  <!-- CLAIMS GRID -->
+
+  <section class="claims-section">
+
+    <div class="section-heading">
+
+      <div>
+
+        <h2>Claims</h2>
+
+        <p>
+          Current claims in the system
+        </p>
+
+      </div>
+
+    </div>
+
+
+    @if (loading) {
+
+      <div class="message">
+        Loading claims...
+      </div>
+
+    } @else if (claims.length === 0) {
+
+      <div class="message">
+        No claims available.
+      </div>
+
+    } @else {
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Claim Number
+              </th>
+
+              <th>
+                Policy Number
+              </th>
+
+              <th>
+                Pet Name
+              </th>
+
+              <th>
+                Treatment Date
+              </th>
+
+              <th>
+                Claimed Amount
+              </th>
+
+              <th>
+                Approved Amount
+              </th>
+
+              <th>
+                Status
+              </th>
+
+              <th>
+                Action
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            @for (
+              claim of claims;
+              track claim.claimNumber
+            ) {
+
+              <tr>
+
+                <td class="claim-number">
+                  {{ claim.claimNumber }}
+                </td>
+
+
+                <td>
+                  {{ claim.policyNumber }}
+                </td>
+
+
+                <td>
+                  {{ claim.petName }}
+                </td>
+
+
+                <td>
+                  {{
+                    claim.treatmentDate
+                    | date:'dd MMM yyyy'
+                  }}
+                </td>
+
+
+                <td>
+                  {{
+                    claim.claimedAmount
+                    | currency:'USD':'symbol':'1.0-0'
+                  }}
+                </td>
+
+
+                <td>
+                  {{
+                    claim.approvedAmount
+                    | currency:'USD':'symbol':'1.0-0'
+                  }}
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="status"
+                    [class.approved-status]="
+                      claim.status === 'Approved'
+                    "
+                    [class.submitted-status]="
+                      claim.status === 'Submitted'
+                    "
+                    [class.review-status]="
+                      claim.status === 'Under Review'
+                    "
+                    [class.rejected-status]="
+                      claim.status === 'Rejected'
+                    "
+                    [class.partial-status]="
+                      claim.status === 'Partially Approved'
+                    "
+                    [class.info-status]="
+                      claim.status === 'More Information Required'
+                    "
+                  >
+
+                    {{ claim.status }}
+
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <a
+  class="review-button"
+  [routerLink]="[
+    '/claims',
+    claim.claimNumber
+  ]"
+>
+
+  @if (
+    claim.status === 'Approved' ||
+    claim.status === 'Rejected' ||
+    claim.status === 'Partially Approved'
+  ) {
+
+    View
+
+  } @else {
+
+    View / Review
+
+  }
+
+</a>
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    }
+
+  </section>
+
+</div>

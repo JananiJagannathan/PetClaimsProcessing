@@ -700,6 +700,8 @@ namespace PetClaims.Api.Services
 
                 PetName =
                     policy.PetName,
+                PetType = policy.PetType,
+                Breed = policy.Breed,
 
                 TreatmentDate =
                     claim.TreatmentDate,

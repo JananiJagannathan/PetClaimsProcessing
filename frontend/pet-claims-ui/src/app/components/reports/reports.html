@@ -1,0 +1,611 @@
+<div class="page">
+
+  <header class="page-header">
+
+    <div>
+
+      <a
+        routerLink="/dashboard"
+        class="back-link"
+      >
+        ← Dashboard
+      </a>
+
+      <h1>
+        Claim History & Reports
+      </h1>
+
+      <p>
+        Search historical claims and review
+        claim-processing reports.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  @if (errorMessage) {
+
+    <div class="alert error">
+      {{ errorMessage }}
+    </div>
+
+  }
+
+
+  <!-- FILTERS -->
+
+  <section class="card">
+
+    <div class="card-title">
+
+      <div>
+        <h2>Claim Filters</h2>
+
+        <p>
+          Search claims by status, dates,
+          amount, policy or clinic.
+        </p>
+      </div>
+
+    </div>
+
+
+    <form
+      [formGroup]="filterForm"
+      (ngSubmit)="loadClaims()"
+    >
+
+      <div class="filter-grid">
+
+
+        <div class="field">
+
+          <label>
+            Status
+          </label>
+
+          <select
+            formControlName="status"
+          >
+            <option value="">
+              All Statuses
+            </option>
+
+            <option value="Submitted">
+              Submitted
+            </option>
+
+            <option value="Under Review">
+              Under Review
+            </option>
+
+            <option value="Approved">
+              Approved
+            </option>
+
+
+            <option value="Rejected">
+              Rejected
+            </option>
+
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Treatment From
+          </label>
+
+          <input
+            type="date"
+            formControlName="fromDate"
+          />
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Treatment To
+          </label>
+
+          <input
+            type="date"
+            formControlName="toDate"
+          />
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Minimum Amount
+          </label>
+
+          <input
+            type="number"
+            min="0"
+            formControlName="minAmount"
+          />
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Maximum Amount
+          </label>
+
+          <input
+            type="number"
+            min="0"
+            formControlName="maxAmount"
+          />
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Policy Number
+          </label>
+
+          <input
+            type="text"
+            formControlName="policyNumber"
+            placeholder="Example: POL001"
+          />
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Clinic
+          </label>
+
+          <input
+            type="text"
+            formControlName="clinic"
+            placeholder="Clinic name"
+          />
+
+        </div>
+
+      </div>
+
+
+      <div class="filter-actions">
+
+        <button
+          type="button"
+          class="clear-button"
+          (click)="clearFilters()"
+        >
+          Clear Filters
+        </button>
+
+        <button
+          type="submit"
+          class="search-button"
+        >
+          Search Claims
+        </button>
+
+      </div>
+
+    </form>
+
+  </section>
+
+
+  <!-- CLAIMS BY STATUS -->
+
+  <section class="report-section">
+
+    <div class="section-heading">
+
+      <h2>
+        Claims by Status
+      </h2>
+
+    </div>
+
+
+    <div class="status-grid">
+
+      <div class="status-card submitted">
+        <span>Submitted</span>
+        <strong>
+          {{ submittedCount }}
+        </strong>
+      </div>
+
+
+      <div class="status-card review">
+        <span>Under Review</span>
+        <strong>
+          {{ underReviewCount }}
+        </strong>
+      </div>
+
+
+      <div class="status-card approved">
+        <span>Approved</span>
+        <strong>
+          {{ approvedCount }}
+        </strong>
+      </div>
+
+
+      <div class="status-card rejected">
+        <span>Rejected</span>
+        <strong>
+          {{ rejectedCount }}
+        </strong>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- AVERAGE -->
+
+  <section class="average-card">
+
+    <div>
+
+      <span>
+        Average Claim Amount
+      </span>
+
+      <strong>
+        {{
+          averageClaimAmount
+          | currency:'USD':'symbol':'1.0-0'
+        }}
+      </strong>
+
+    </div>
+
+    <p>
+      Based on the currently displayed
+      claim results.
+    </p>
+
+  </section>
+
+
+  <!-- CLAIM HISTORY -->
+
+  <section class="card">
+
+    <div class="card-title">
+
+      <div>
+
+        <h2>
+          Claim History
+        </h2>
+
+        <p>
+          {{ claims.length }}
+          claim(s) found.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    @if (loading) {
+
+      <div class="message">
+        Loading claims...
+      </div>
+
+    } @else if (claims.length === 0) {
+
+      <div class="message">
+        No claims match the selected filters.
+      </div>
+
+    } @else {
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Claim Number</th>
+              <th>Policy</th>
+              <th>Pet</th>
+              <th>Treatment Date</th>
+              <th>Clinic</th>
+              <th>Claimed</th>
+              <th>Approved</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            @for (
+              claim of claims;
+              track claim.claimNumber
+            ) {
+
+              <tr>
+
+                <td class="claim-number">
+                  {{ claim.claimNumber }}
+                </td>
+
+                <td>
+                  {{ claim.policyNumber }}
+                </td>
+
+                <td>
+                  {{ claim.petName }}
+                </td>
+
+                <td>
+                  {{
+                    claim.treatmentDate
+                    | date:'dd MMM yyyy'
+                  }}
+                </td>
+
+                <td>
+                  {{ claim.clinic }}
+                </td>
+
+                <td>
+                  {{
+                    claim.claimedAmount
+                    | currency:'USD':'symbol':'1.0-0'
+                  }}
+                </td>
+
+                <td>
+                  {{
+                    claim.approvedAmount
+                    | currency:'USD':'symbol':'1.0-0'
+                  }}
+                </td>
+
+                <td>
+                  {{ claim.status }}
+                </td>
+
+                <td>
+
+                  <a
+                    class="view-button"
+                    [routerLink]="[
+                      '/claims',
+                      claim.claimNumber
+                    ]"
+                  >
+                    View
+                  </a>
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    }
+
+  </section>
+
+
+  <!-- MONTHLY REPORT -->
+
+  <section class="card">
+
+    <div class="card-title">
+
+      <div>
+
+        <h2>
+          Monthly Claims
+        </h2>
+
+        <p>
+          Monthly claim totals and averages.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    @if (
+      monthlyReports.length === 0
+    ) {
+
+      <div class="message">
+        No monthly report data available.
+      </div>
+
+    } @else {
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>Month</th>
+              <th>Claims</th>
+              <th>Total Claimed</th>
+              <th>Total Approved</th>
+              <th>Average Claim</th>
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            @for (
+              report of monthlyReports;
+              track report.year + '-' + report.month
+            ) {
+
+              <tr>
+
+                <td>
+                  {{ report.monthName }}
+                  {{ report.year }}
+                </td>
+
+                <td>
+                  {{ report.claimCount }}
+                </td>
+
+                <td>
+                  {{
+                    report.totalClaimedAmount
+                    | currency:'USD':'symbol':'1.0-0'
+                  }}
+                </td>
+
+                <td>
+                  {{
+                    report.totalApprovedAmount
+                    | currency:'USD':'symbol':'1.0-0'
+                  }}
+                </td>
+
+                <td>
+                  {{
+                    report.averageClaimAmount
+                    | currency:'USD':'symbol':'1.0-0'
+                  }}
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    }
+
+  </section>
+
+
+  <!-- HIGHEST VALUE CLAIMS -->
+
+  <section class="card">
+
+    <div class="card-title">
+
+      <div>
+
+        <h2>
+          Highest-Value Claims
+        </h2>
+
+        <p>
+          Top five claims by claimed amount.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    @if (
+      highestValueClaims.length === 0
+    ) {
+
+      <div class="message">
+        No claim data available.
+      </div>
+
+    } @else {
+
+      <div class="highest-list">
+
+        @for (
+          claim of highestValueClaims;
+          track claim.claimNumber;
+          let position = $index
+        ) {
+
+          <a
+            class="highest-item"
+            [routerLink]="[
+              '/claims',
+              claim.claimNumber
+            ]"
+          >
+
+            <div class="rank">
+              {{ position + 1 }}
+            </div>
+
+            <div class="highest-info">
+
+              <strong>
+                {{ claim.claimNumber }}
+              </strong>
+
+              <span>
+                {{ claim.petName }}
+                ·
+                {{ claim.policyNumber }}
+              </span>
+
+            </div>
+
+            <strong class="highest-amount">
+              {{
+                claim.claimedAmount
+                | currency:'USD':'symbol':'1.0-0'
+              }}
+            </strong>
+
+          </a>
+
+        }
+
+      </div>
+
+    }
+
+  </section>
+
+</div>

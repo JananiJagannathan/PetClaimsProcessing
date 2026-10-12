@@ -1,0 +1,964 @@
+<div class="page">
+
+  <!-- HEADER -->
+
+  <header class="page-header">
+
+    <div>
+
+      <a
+        routerLink="/dashboard"
+        class="back-link"
+      >
+        ← Dashboard
+      </a>
+
+      <h1>
+        Claim Review
+      </h1>
+
+      <p>
+        Review claim information,
+        policy coverage and decision history.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- LOADING -->
+
+  @if (loading) {
+
+    <div class="state-card">
+      Loading claim details...
+    </div>
+
+  }
+
+
+  <!-- ERROR -->
+
+  @if (errorMessage) {
+
+    <div class="alert error">
+      {{ errorMessage }}
+    </div>
+
+  }
+
+
+  <!-- SUCCESS -->
+
+  @if (successMessage) {
+
+    <div class="alert success">
+      {{ successMessage }}
+    </div>
+
+  }
+
+
+  @if (!loading && claim) {
+
+    <!-- CLAIM HEADER -->
+
+    <section class="claim-heading">
+
+      <div>
+
+        <span class="eyebrow">
+          Claim Number
+        </span>
+
+        <h2>
+          {{ claim.claimNumber }}
+        </h2>
+
+      </div>
+
+
+      <span
+        class="status-badge"
+
+        [class.submitted-status]="
+          claim.status === 'Submitted'
+        "
+
+        [class.review-status]="
+          claim.status === 'Under Review'
+        "
+
+        [class.approved-status]="
+          claim.status === 'Approved'
+        "
+
+        [class.partial-status]="
+          claim.status === 'Partially Approved'
+        "
+
+        [class.rejected-status]="
+          claim.status === 'Rejected'
+        "
+
+        [class.info-status]="
+          claim.status ===
+          'More Information Required'
+        "
+      >
+
+        {{ claim.status }}
+
+      </span>
+
+    </section>
+
+
+    <!-- MAIN GRID -->
+
+    <div class="detail-grid">
+
+
+      <!-- CLAIM INFORMATION -->
+
+      <section class="card">
+
+        <div class="card-title">
+
+          <div>
+            <h2>
+              Claim Information
+            </h2>
+
+            <p>
+              Treatment and invoice details
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="info-grid">
+
+          <div class="info-item">
+            <span>
+              Policy Number
+            </span>
+
+            <strong>
+              {{ claim.policyNumber }}
+            </strong>
+          </div>
+
+
+          <div class="info-item">
+  <span>
+    Pet Name
+  </span>
+
+  <strong>
+    {{ claim.petName }}
+  </strong>
+</div>
+
+<div class="info-item">
+  <span>
+    Pet Type
+  </span>
+
+  <strong>
+    {{ claim.petType }}
+  </strong>
+</div>
+
+<div class="info-item">
+  <span>
+    Breed
+  </span>
+
+  <strong>
+    {{ claim.breed }}
+  </strong>
+</div>
+          <div class="info-item">
+            <span>
+              Treatment Date
+            </span>
+
+            <strong>
+              {{
+                claim.treatmentDate
+                | date:'dd MMM yyyy'
+              }}
+            </strong>
+          </div>
+
+
+          <div class="info-item">
+            <span>
+              Clinic
+            </span>
+
+            <strong>
+              {{ claim.clinic }}
+            </strong>
+          </div>
+
+
+          <div class="info-item">
+            <span>
+              Diagnosis
+            </span>
+
+            <strong>
+              {{ claim.diagnosis }}
+            </strong>
+          </div>
+
+
+          <div class="info-item">
+            <span>
+              Invoice Number
+            </span>
+
+            <strong>
+              {{ claim.invoiceNumber }}
+            </strong>
+          </div>
+
+        </div>
+
+
+        <div class="description-box">
+
+          <span>
+            Treatment Description
+          </span>
+
+          <p>
+            {{ claim.treatmentDescription }}
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- POLICY INFORMATION -->
+
+      <section class="card">
+
+        <div class="card-title">
+
+          <div>
+
+            <h2>
+              Policy & Coverage
+            </h2>
+
+            <p>
+              Policy limits and eligibility
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="info-grid">
+
+          <div class="info-item">
+
+            <span>
+              Policy Start
+            </span>
+
+            <strong>
+              {{
+                claim.policyStartDate
+                | date:'dd MMM yyyy'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <span>
+              Policy End
+            </span>
+
+            <strong>
+              {{
+                claim.policyEndDate
+                | date:'dd MMM yyyy'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <span>
+              Coverage
+            </span>
+
+            <strong>
+              {{ claim.coverage }}
+            </strong>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <span>
+              Reimbursement
+            </span>
+
+            <strong>
+              {{
+                claim.reimbursementPercentage
+              }}%
+            </strong>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <span>
+              Annual Limit
+            </span>
+
+            <strong>
+              {{
+                claim.annualLimit
+                | currency:'USD':'symbol':'1.0-0'
+              }}
+            </strong>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <span>
+              Remaining Annual Limit
+            </span>
+
+            <strong>
+              {{
+                claim.remainingAnnualLimit
+                | currency:'USD':'symbol':'1.0-0'
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <!-- CALCULATION -->
+
+    <section class="card calculation-card">
+
+      <div class="card-title">
+
+        <div>
+
+          <h2>
+            Claim Calculation
+          </h2>
+
+          <p>
+            Simplified reimbursement calculation
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="calculation-grid">
+
+
+        <div class="calculation-item">
+
+          <span>
+            Claimed Amount
+          </span>
+
+          <strong>
+            {{
+              claim.claimedAmount
+              | currency:'USD':'symbol':'1.0-0'
+            }}
+          </strong>
+
+        </div>
+
+
+        <div class="operator">
+          −
+        </div>
+
+
+        <div class="calculation-item">
+
+          <span>
+            Deductible
+          </span>
+
+          <strong>
+            {{
+              claim.deductible
+              | currency:'USD':'symbol':'1.0-0'
+            }}
+          </strong>
+
+        </div>
+
+
+        <div class="operator">
+          =
+        </div>
+
+
+        <div class="calculation-item highlight">
+
+          <span>
+            Eligible Amount
+          </span>
+
+          <strong>
+            {{
+              claim.eligibleAmount
+              | currency:'USD':'symbol':'1.0-0'
+            }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="reimbursement-box">
+
+        <div>
+
+          <span>
+            Reimbursement Percentage
+          </span>
+
+          <strong>
+            {{
+              claim.reimbursementPercentage
+            }}%
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Calculated Reimbursement
+          </span>
+
+          <strong>
+            {{
+              calculatedReimbursement
+              | currency:'USD':'symbol':'1.0-0'
+            }}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Approved Amount
+          </span>
+
+          <strong>
+            {{
+              claim.approvedAmount
+              | currency:'USD':'symbol':'1.0-0'
+            }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ACTIONS -->
+
+    <section class="card">
+
+      <div class="card-title">
+
+        <div>
+
+          <h2>
+            Review Actions
+          </h2>
+
+          <p>
+            Process the current claim
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- SUBMITTED -->
+
+      @if (isSubmitted()) {
+
+        <div class="workflow-message">
+
+          <p>
+            This claim has been submitted
+            and is ready for review.
+          </p>
+
+          <button
+            type="button"
+            class="primary-button"
+            (click)="startReview()"
+            [disabled]="processing"
+          >
+
+            @if (processing) {
+              Processing...
+            } @else {
+              Start Review
+            }
+
+          </button>
+
+        </div>
+
+      }
+
+
+      <!-- MORE INFORMATION REQUIRED -->
+
+      @if (isMoreInformationRequired()) {
+
+        <div class="workflow-message info-message">
+
+          <p>
+            Additional information was requested.
+            Once it is available, move the claim
+            back to review.
+          </p>
+
+          <button
+            type="button"
+            class="primary-button"
+            (click)="startReview()"
+            [disabled]="processing"
+          >
+
+            Return to Review
+
+          </button>
+
+        </div>
+
+      }
+
+
+      <!-- UNDER REVIEW -->
+
+      @if (isUnderReview()) {
+
+        <div class="action-buttons">
+
+          <button
+            type="button"
+            class="approve-button"
+            (click)="showApprove()"
+          >
+            Approve
+          </button>
+
+
+          <button
+            type="button"
+            class="partial-button"
+            (click)="showPartialApproval()"
+          >
+            Partially Approve
+          </button>
+
+
+          <button
+            type="button"
+            class="reject-button"
+            (click)="showReject()"
+          >
+            Reject
+          </button>
+
+
+          <button
+            type="button"
+            class="info-button"
+            (click)="showMoreInformation()"
+          >
+            Request Additional Information
+          </button>
+
+        </div>
+
+      }
+
+
+      <!-- FINALISED -->
+
+      @if (isFinalised()) {
+
+        <div class="finalised-box">
+
+          <strong>
+            ✓ Claim Finalised
+          </strong>
+
+          <p>
+            This claim has a final decision and
+            cannot be processed again.
+          </p>
+
+        </div>
+
+      }
+
+
+      <!-- DECISION FORM -->
+
+      @if (actionType) {
+
+        <div class="decision-panel">
+
+
+          @if (actionType === 'approve') {
+
+            <h3>
+              Approve Claim
+            </h3>
+
+            <p>
+              The backend will calculate
+              and apply the maximum allowed
+              reimbursable amount.
+            </p>
+
+          }
+
+
+          @if (actionType === 'partial') {
+
+            <h3>
+              Partially Approve Claim
+            </h3>
+
+            <p>
+              Enter an amount below the maximum
+              allowable reimbursement.
+            </p>
+
+          }
+
+
+          @if (actionType === 'reject') {
+
+            <h3>
+              Reject Claim
+            </h3>
+
+            <p>
+              A rejection reason is required.
+            </p>
+
+          }
+
+
+          @if (actionType === 'more-info') {
+
+            <h3>
+              Request Additional Information
+            </h3>
+
+            <p>
+              Explain which supporting information
+              is still required.
+            </p>
+
+          }
+
+
+          <form
+            [formGroup]="decisionForm"
+          >
+
+
+            <!-- PARTIAL AMOUNT -->
+
+            @if (actionType === 'partial') {
+
+              <div class="field">
+
+                <label>
+                  Approved Amount *
+                </label>
+
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  formControlName="approvedAmount"
+                />
+
+                @if (
+                  f.approvedAmount.touched &&
+                  f.approvedAmount.invalid
+                ) {
+
+                  <small class="validation-error">
+                    Enter an amount greater than zero.
+                  </small>
+
+                }
+
+              </div>
+
+            }
+
+
+            <!-- REASON -->
+
+            <div class="field">
+
+              <label>
+                Reason *
+              </label>
+
+              <textarea
+                rows="4"
+                formControlName="reason"
+                placeholder="Enter decision reason"
+              ></textarea>
+
+              @if (
+                f.reason.touched &&
+                f.reason.invalid
+              ) {
+
+                <small class="validation-error">
+                  A reason is required.
+                </small>
+
+              }
+
+            </div>
+
+
+            <!-- FORM ACTIONS -->
+
+            <div class="decision-actions">
+
+              <button
+                type="button"
+                class="cancel-button"
+                (click)="cancelAction()"
+              >
+                Cancel
+              </button>
+
+
+              @if (actionType === 'approve') {
+
+                <button
+                  type="button"
+                  class="approve-button"
+                  (click)="confirmApprove()"
+                  [disabled]="processing"
+                >
+                  Confirm Approval
+                </button>
+
+              }
+
+
+              @if (actionType === 'partial') {
+
+                <button
+                  type="button"
+                  class="partial-button"
+                  (click)="confirmPartialApproval()"
+                  [disabled]="processing"
+                >
+                  Confirm Partial Approval
+                </button>
+
+              }
+
+
+              @if (actionType === 'reject') {
+
+                <button
+                  type="button"
+                  class="reject-button"
+                  (click)="confirmReject()"
+                  [disabled]="processing"
+                >
+                  Confirm Rejection
+                </button>
+
+              }
+
+
+              @if (actionType === 'more-info') {
+
+                <button
+                  type="button"
+                  class="info-button"
+                  (click)="confirmMoreInformation()"
+                  [disabled]="processing"
+                >
+                  Request Information
+                </button>
+
+              }
+
+            </div>
+
+          </form>
+
+        </div>
+
+      }
+
+    </section>
+
+
+    <!-- DECISION HISTORY -->
+
+    <section class="card">
+
+      <div class="card-title">
+
+        <div>
+
+          <h2>
+            Decision History
+          </h2>
+
+          <p>
+            Complete claim processing history
+          </p>
+
+        </div>
+
+      </div>
+
+
+      @if (
+        claim.decisionHistory.length === 0
+      ) {
+
+        <div class="empty-history">
+
+          No claim decisions have been recorded yet.
+
+        </div>
+
+      } @else {
+
+        <div class="timeline">
+
+          @for (
+            decision of claim.decisionHistory;
+            track decision.decisionDate
+          ) {
+
+            <div class="timeline-item">
+
+              <div class="timeline-dot"></div>
+
+              <div class="timeline-content">
+
+                <div class="timeline-heading">
+
+                  <strong>
+                    {{ decision.decision }}
+                  </strong>
+
+                  <span>
+                    {{
+                      decision.decisionDate
+                      | date:'dd MMM yyyy, h:mm a'
+                    }}
+                  </span>
+
+                </div>
+
+
+                @if (decision.reason) {
+
+                  <p>
+                    {{ decision.reason }}
+                  </p>
+
+                }
+
+
+                @if (
+                  decision.approvedAmount > 0
+                ) {
+
+                  <div class="decision-amount">
+
+                    Approved Amount:
+
+                    <strong>
+                      {{
+                        decision.approvedAmount
+                        | currency:'USD':'symbol':'1.0-0'
+                      }}
+                    </strong>
+
+                  </div>
+
+                }
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+</div>

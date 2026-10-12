@@ -161,6 +161,10 @@ namespace PetClaims.Api.Migrations
                     b.Property<decimal>("AnnualLimit")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Breed")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Coverage")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -172,6 +176,10 @@ namespace PetClaims.Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PetName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PetType")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

@@ -1,0 +1,113 @@
+<div class="page">
+
+  <header class="header">
+
+    <div>
+
+      <a
+        routerLink="/dashboard"
+        class="back-link"
+      >
+        ← Dashboard
+      </a>
+
+      <h1>
+        📊 Import & Export Claims
+      </h1>
+
+      <p>
+        Import claims from Excel and export claims to Excel.
+      </p>
+
+    </div>
+
+  </header>
+
+  <div class="layout">
+
+        <!-- IMPORT -->
+    <section class="card">
+
+      <h2>
+        Import Claims
+      </h2>
+
+      <p>
+        Upload only .xlsx Excel files.
+      </p>
+
+      <input
+        type="file"
+        accept=".xlsx"
+        (change)="onFileSelected($event)"
+      />
+
+      @if (importMessage && importError) {
+
+        <small class="validation-error">
+          {{ importMessage }}
+        </small>
+
+      }
+
+      <button
+        type="button"
+        class="import-button"
+        (click)="importClaims()"
+      >
+        Import Claims
+      </button>
+
+      @if (importMessage && !importError) {
+
+        <div class="success-message">
+          {{ importMessage }}
+        </div>
+
+      }
+
+    </section>
+    <!-- EXPORT -->
+
+    <section class="card">
+
+      <h2>
+        Export Claims
+      </h2>
+
+      <p>
+        Download all claims as an Excel file.
+      </p>
+
+      <button
+        type="button"
+        class="export-button"
+        (click)="exportClaims()"
+      >
+        Export Claims
+      </button>
+
+      @if (exportMessage) {
+
+        <div
+          [class.validation-error]="exportError"
+          [class.success-message]="!exportError"
+        >
+          {{ exportMessage }}
+        </div>
+
+      }
+
+    </section>
+
+  
+
+  </div>
+
+  <div class="footer-action">
+
+
+
+  </div>
+
+</div>

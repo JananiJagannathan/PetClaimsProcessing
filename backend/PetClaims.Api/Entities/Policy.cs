@@ -10,6 +10,9 @@ namespace PetClaims.Api.Entities
         public string PolicyNumber { get; set; } = string.Empty;
 
         public string PetName { get; set; } = string.Empty;
+        public string PetType { get; set; } = string.Empty;
+
+public string Breed { get; set; } = string.Empty;
 
         public DateTime StartDate { get; set; }
 

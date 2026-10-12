@@ -8,6 +8,10 @@ namespace PetClaims.Api.DTOs
 
         public string PetName { get; set; } = string.Empty;
 
+        public string PetType { get; set; } = string.Empty;
+
+        public string Breed { get; set; } = string.Empty;
+
         public DateTime TreatmentDate { get; set; }
 
         public string Clinic { get; set; } = string.Empty;
@@ -26,7 +30,6 @@ namespace PetClaims.Api.DTOs
 
         public DateTime CreatedDate { get; set; }
 
-        // Policy information used during claim review
         public DateTime PolicyStartDate { get; set; }
 
         public DateTime PolicyEndDate { get; set; }

@@ -8,6 +8,10 @@ namespace PetClaims.Api.DTOs
 
         public string PetName { get; set; } = string.Empty;
 
+        public string PetType { get; set; } = string.Empty;
+
+        public string Breed { get; set; } = string.Empty;
+
         public string Clinic { get; set; } = string.Empty;
 
         public DateTime TreatmentDate { get; set; }
