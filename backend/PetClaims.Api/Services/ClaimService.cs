@@ -21,9 +21,7 @@ namespace PetClaims.Api.Services
             _logger = logger;
         }
 
-        // ==================================================
-        // 1. CREATE / SUBMIT CLAIM
-        // ==================================================
+
 
         public async Task<ClaimDetailsDto> CreateClaimAsync(
             CreateClaimDto dto)
@@ -58,6 +56,11 @@ namespace PetClaims.Api.Services
                 throw new BusinessException(
                     "Claimed amount must be greater than zero.");
             }
+            if (dto.ClaimedAmount <= policy.Deductible)
+{
+    throw new BusinessException(
+        $"Claimed amount must be greater than the deductible amount of {policy.Deductible}.");
+}
 
             var duplicateInvoice =
                 await _claimRepository.InvoiceExistsAsync(
@@ -122,9 +125,7 @@ namespace PetClaims.Api.Services
                 policy);
         }
 
-        // ==================================================
-        // 2. GET CLAIM DETAILS
-        // ==================================================
+
 
         public async Task<ClaimDetailsDto?> GetClaimAsync(
             string claimNumber)
@@ -144,9 +145,7 @@ namespace PetClaims.Api.Services
                 claim.Policy);
         }
 
-        // ==================================================
-        // 3. UPDATE EDITABLE CLAIM
-        // ==================================================
+
 
         public async Task<ClaimDetailsDto> UpdateClaimAsync(
             string claimNumber,
@@ -168,6 +167,11 @@ namespace PetClaims.Api.Services
                 throw new BusinessException(
                     "Claimed amount must be greater than zero.");
             }
+           if (dto.ClaimedAmount <= policy.Deductible)
+{
+    throw new BusinessException(
+        $"Claimed amount must be greater than the deductible amount of {policy.Deductible}.");
+}
 
             if (dto.TreatmentDate.Date < policy.StartDate.Date ||
                 dto.TreatmentDate.Date > policy.EndDate.Date)
@@ -219,9 +223,6 @@ namespace PetClaims.Api.Services
                 policy);
         }
 
-        // ==================================================
-        // 4. SEARCH / FILTER CLAIMS
-        // ==================================================
 
         public async Task<List<ClaimDetailsDto>>
             SearchClaimsAsync(
@@ -248,9 +249,6 @@ namespace PetClaims.Api.Services
             return result;
         }
 
-        // ==================================================
-        // 5. MOVE TO REVIEW
-        // ==================================================
 
         public async Task<ClaimDetailsDto> MoveToReviewAsync(
             string claimNumber)
@@ -293,9 +291,6 @@ namespace PetClaims.Api.Services
                 claim.Policy!);
         }
 
-        // ==================================================
-        // 6. APPROVE / PARTIALLY APPROVE
-        // ==================================================
 
         public async Task<ClaimDetailsDto> ApproveClaimAsync(
             string claimNumber,
@@ -325,6 +320,12 @@ namespace PetClaims.Api.Services
                     claim.ClaimedAmount -
                     policy.Deductible);
 
+                    if (eligibleAmount <= 0)
+{
+    throw new BusinessException(
+        "Claim amount does not exceed the policy deductible. No reimbursement is payable.");
+}
+
             // Eligible Amount * Reimbursement %
             var calculatedAmount =
                 eligibleAmount *
@@ -341,16 +342,19 @@ namespace PetClaims.Api.Services
                     0,
                     policy.AnnualLimit -
                     alreadyApproved);
+            if (remainingAnnualLimit <= 0)
+{
+    throw new BusinessException(
+        "Annual policy limit has been exhausted. No further claims can be approved until the policy is renewed.");
+}
 
-            var maximumAllowed =
-                Math.Min(
-                    calculatedAmount,
-                    claim.ClaimedAmount);
+var maximumAllowed =
+    Math.Min(
+        calculatedAmount,
+        Math.Min(
+            claim.ClaimedAmount,
+            remainingAnnualLimit));
 
-            maximumAllowed =
-                Math.Min(
-                    maximumAllowed,
-                    remainingAnnualLimit);
 
             decimal approvedAmount;
 
@@ -421,9 +425,7 @@ namespace PetClaims.Api.Services
                 policy);
         }
 
-        // ==================================================
-        // 7. REJECT CLAIM
-        // ==================================================
+
 
         public async Task<ClaimDetailsDto> RejectClaimAsync(
             string claimNumber,
@@ -485,9 +487,6 @@ namespace PetClaims.Api.Services
                 claim.Policy!);
         }
 
-        // ==================================================
-        // 8. REQUEST MORE INFORMATION
-        // ==================================================
 
         public async Task<ClaimDetailsDto>
             RequestMoreInformationAsync(
@@ -547,9 +546,7 @@ namespace PetClaims.Api.Services
                 claim.Policy!);
         }
 
-        // ==================================================
-        // 9. DASHBOARD
-        // ==================================================
+
 
         public async Task<DashboardDto> GetDashboardAsync()
         {
@@ -557,9 +554,6 @@ namespace PetClaims.Api.Services
                 .GetDashboardAsync();
         }
 
-        // ==================================================
-        // 10. MONTHLY REPORT
-        // ==================================================
 
         public async Task<List<MonthlyReportDto>>
             GetMonthlyReportAsync()
@@ -568,10 +562,7 @@ namespace PetClaims.Api.Services
                 .GetMonthlyReportAsync();
         }
 
-        // ==================================================
-        // 11. HIGHEST VALUE CLAIMS
-        // LINQ: OrderByDescending + Take
-        // ==================================================
+
 
         public async Task<List<ClaimDetailsDto>>
             GetHighestValueClaimsAsync(
@@ -604,10 +595,7 @@ namespace PetClaims.Api.Services
             return result;
         }
 
-        // ==================================================
-        // 12. CLAIM + POLICY REPORT
-        // LINQ: Join
-        // ==================================================
+
 
         public async Task<List<ClaimPolicyReportDto>>
             GetClaimPolicyReportAsync()
@@ -616,9 +604,6 @@ namespace PetClaims.Api.Services
                 .GetClaimPolicyReportAsync();
         }
 
-        // ==================================================
-        // PRIVATE HELPERS
-        // ==================================================
 
         private async Task<Claim> GetRequiredClaimAsync(
             string claimNumber)
@@ -641,9 +626,6 @@ namespace PetClaims.Api.Services
             return claim;
         }
 
-        // --------------------------------------------------
-        // CHECK IF CLAIM IS FINALISED
-        // --------------------------------------------------
 
         private static bool IsFinalised(
             string status)
@@ -653,9 +635,7 @@ namespace PetClaims.Api.Services
                    status == "Rejected";
         }
 
-        // --------------------------------------------------
-        // GENERATE CLAIM NUMBER
-        // --------------------------------------------------
+
 
         private static string GenerateClaimNumber()
         {
@@ -663,9 +643,6 @@ namespace PetClaims.Api.Services
                 $"CLM-{DateTime.UtcNow:yyyyMMddHHmmssfff}";
         }
 
-        // --------------------------------------------------
-        // ENTITY -> DTO
-        // --------------------------------------------------
 
         private async Task<ClaimDetailsDto>
             MapToDetailsDtoAsync(

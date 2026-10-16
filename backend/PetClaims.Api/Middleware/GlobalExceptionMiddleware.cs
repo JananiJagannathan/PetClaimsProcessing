@@ -21,18 +21,20 @@ namespace PetClaims.Api.Middleware
         {
             try
             {
-                // Continue to the next middleware/controller
                 await _next(context);
             }
             catch (Exception ex)
             {
-                // Log the exception
                 _logger.LogError(
                     ex,
                     "An error occurred while processing the request.");
 
-                // Convert exception into proper HTTP response
-                await HandleExceptionAsync(context, ex);
+                if (!context.Response.HasStarted)
+                {
+                    await HandleExceptionAsync(
+                        context,
+                        ex);
+                }
             }
         }
 
@@ -40,6 +42,11 @@ namespace PetClaims.Api.Middleware
             HttpContext context,
             Exception exception)
         {
+            if (context.Response.HasStarted)
+            {
+                return;
+            }
+
             var statusCode = exception switch
             {
                 NotFoundException =>
@@ -61,11 +68,16 @@ namespace PetClaims.Api.Middleware
                 message = exception.Message
             };
 
-            context.Response.ContentType = "application/json";
+            context.Response.Clear();
 
-            context.Response.StatusCode = (int)statusCode;
+            context.Response.ContentType =
+                "application/json";
 
-            var json = JsonSerializer.Serialize(response);
+            context.Response.StatusCode =
+                (int)statusCode;
+
+            var json =
+                JsonSerializer.Serialize(response);
 
             await context.Response.WriteAsync(json);
         }

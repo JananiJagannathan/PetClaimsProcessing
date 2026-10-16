@@ -437,43 +437,46 @@
 
           <!-- CLAIMED AMOUNT -->
 
-          <div class="field">
+         <div class="field">
 
-            <label>
-              Claimed Amount *
-            </label>
+  <label>
+    Claimed Amount *
+  </label>
 
-            <input
-              type="number"
-              min="0.01"
-              step="0.01"
-              formControlName="claimedAmount"
-            />
+  <input
+    type="number"
+    min="0.01"
+    step="0.01"
+    formControlName="claimedAmount"
+  />
 
+  @if (
+    f.claimedAmount.touched &&
+    f.claimedAmount.hasError('required')
+  ) {
+    <small class="validation-error">
+      Claimed amount is required.
+    </small>
+  }
 
-            @if (
-  f.claimedAmount.touched &&
-  f.claimedAmount.hasError('required')
-) {
-  <small class="validation-error">
-    Claimed amount is required.
-  </small>
-}
+  @if (
+    f.claimedAmount.touched &&
+    f.claimedAmount.hasError('min')
+  ) {
+    <small class="validation-error">
+      Claimed amount must be greater than zero.
+    </small>
+  }
 
-@if (
-  f.claimedAmount.touched &&
-  f.claimedAmount.hasError('min')
-) {
-  <small class="validation-error">
-    Claimed amount must be greater than zero.
-  </small>
-}
+  @if (
+    submitError.includes('deductible')
+  ) {
+    <small class="validation-error">
+      {{ submitError }}
+    </small>
+  }
 
-          </div>
-
-
-          <!-- INVOICE NUMBER -->
-
+</div>
 <!-- INVOICE NUMBER -->
 
 <div class="field">

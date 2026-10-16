@@ -492,6 +492,23 @@ button:disabled {
   background: #dc2626;
 }
 
+.policy-limit-warning {
+  margin-top: 16px;
+  padding: 12px;
+
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.approve-button:disabled,
+.partial-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 .info-button {
   background: #0891b2;
 }

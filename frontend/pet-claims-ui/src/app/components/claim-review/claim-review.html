@@ -344,24 +344,36 @@
           </div>
 
 
-          <div class="info-item">
+  <div class="info-item">
+    <span>Remaining Annual Limit</span>
+    <strong>
+      {{
+        claim.remainingAnnualLimit
+        | currency:'USD':'symbol':'1.0-0'
+      }}
+    </strong>
+  </div>
 
-            <span>
-              Remaining Annual Limit
-            </span>
+</div>
 
-            <strong>
-              {{
-                claim.remainingAnnualLimit
-                | currency:'USD':'symbol':'1.0-0'
-              }}
-            </strong>
+@if (claim.remainingAnnualLimit <= 0) {
 
-          </div>
+  <div class="policy-limit-warning">
 
-        </div>
+    <strong>
+      ⚠ Annual policy limit has been exhausted.
+    </strong>
 
-      </section>
+    <p>
+      No further claims can be approved until the policy is renewed.
+    </p>
+
+  </div>
+
+}
+
+
+</section>
 
     </div>
 
@@ -590,21 +602,24 @@
         <div class="action-buttons">
 
           <button
-            type="button"
-            class="approve-button"
-            (click)="showApprove()"
-          >
-            Approve
-          </button>
+  type="button"
+  class="approve-button"
+  (click)="showApprove()"
+  [disabled]="claim.remainingAnnualLimit <= 0"
+>
+  Approve
+</button>
 
 
-          <button
-            type="button"
-            class="partial-button"
-            (click)="showPartialApproval()"
-          >
-            Partially Approve
-          </button>
+
+<button
+  type="button"
+  class="partial-button"
+  (click)="showPartialApproval()"
+  [disabled]="claim.remainingAnnualLimit <= 0"
+>
+  Partially Approve
+</button>
 
 
           <button
@@ -801,14 +816,20 @@
 
               @if (actionType === 'partial') {
 
-                <button
-                  type="button"
-                  class="partial-button"
-                  (click)="confirmPartialApproval()"
-                  [disabled]="processing"
-                >
-                  Confirm Partial Approval
-                </button>
+               <button
+  type="button"
+  class="partial-button"
+  (click)="confirmPartialApproval()"
+  [disabled]="processing"
+>
+  {{
+    decisionForm.get('approvedAmount')?.value ==
+    calculatedReimbursement
+      ? 'Confirm Approval'
+      : 'Confirm Partial Approval'
+  }}
+</button>
+
 
               }
 

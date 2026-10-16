@@ -25,13 +25,6 @@
   </header>
 
 
-  @if (errorMessage) {
-
-    <div class="alert error">
-      {{ errorMessage }}
-    </div>
-
-  }
 
 
   <!-- FILTERS -->
@@ -89,7 +82,9 @@
             <option value="Rejected">
               Rejected
             </option>
-
+            <option value="Partially Approved">
+  Partially Approved
+</option>
 
           </select>
 
@@ -124,36 +119,47 @@
         </div>
 
 
-        <div class="field">
+<div class="field">
+  <label for="minAmount">
+    Minimum Amount
+  </label>
 
-          <label>
-            Minimum Amount
-          </label>
+  <input
+    id="minAmount"
+    type="number"
+    formControlName="minAmount"
+  />
 
-          <input
-            type="number"
-            min="0"
-            formControlName="minAmount"
-          />
+  @if (f.minAmount.touched && f.minAmount.hasError('min')) {
+    <small class="validation-error">
+      Minimum amount cannot be negative.
+    </small>
+  }
 
-        </div>
+  @if (errorMessage === 'Minimum amount cannot be greater than maximum amount.') {
+    <small class="validation-error">
+      Minimum amount cannot be greater than maximum amount.
+    </small>
+  }
+</div>
 
+ <div class="field">
+  <label for="maxAmount">
+    Maximum Amount
+  </label>
 
-        <div class="field">
+  <input
+    id="maxAmount"
+    type="number"
+    formControlName="maxAmount"
+  />
 
-          <label>
-            Maximum Amount
-          </label>
-
-          <input
-            type="number"
-            min="0"
-            formControlName="maxAmount"
-          />
-
-        </div>
-
-
+  @if (f.maxAmount.touched && f.maxAmount.hasError('min')) {
+    <small class="validation-error">
+      Maximum amount cannot be negative.
+    </small>
+  }
+</div>
         <div class="field">
 
           <label>
@@ -241,21 +247,26 @@
       </div>
 
 
-      <div class="status-card approved">
-        <span>Approved</span>
-        <strong>
-          {{ approvedCount }}
-        </strong>
-      </div>
+<div class="status-card approved">
+  <span>Approved</span>
+  <strong>
+    {{ approvedCount }}
+  </strong>
+</div>
 
+<div class="status-card partial">
+  <span>Partially Approved</span>
+  <strong>
+    {{ partiallyApprovedCount }}
+  </strong>
+</div>
 
-      <div class="status-card rejected">
-        <span>Rejected</span>
-        <strong>
-          {{ rejectedCount }}
-        </strong>
-      </div>
-
+<div class="status-card rejected">
+  <span>Rejected</span>
+  <strong>
+    {{ rejectedCount }}
+  </strong>
+</div>
     </div>
 
   </section>

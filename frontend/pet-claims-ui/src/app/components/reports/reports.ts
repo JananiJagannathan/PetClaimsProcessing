@@ -9,7 +9,8 @@ import { CommonModule } from '@angular/common';
 
 import {
   FormBuilder,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
 
 import { RouterLink } from '@angular/router';
@@ -61,9 +62,9 @@ export class Reports implements OnInit {
 
       toDate: [''],
 
-      minAmount: [0],
+      minAmount: [0, [Validators.min(0)]],
 
-      maxAmount: [0],
+      maxAmount: [0, [Validators.min(0)]],
 
       policyNumber: [''],
 
@@ -89,6 +90,17 @@ export class Reports implements OnInit {
 
     const values =
       this.filterForm.getRawValue();
+
+    if (
+  values.minAmount > 0 &&
+  values.maxAmount > 0 &&
+  values.minAmount > values.maxAmount
+) {
+  this.errorMessage =
+    'Minimum amount cannot be greater than maximum amount.';
+  this.loading = false;
+  return;
+}
 
     const search: ClaimSearch = {};
 
@@ -247,7 +259,15 @@ export class Reports implements OnInit {
       )
       .length;
   }
+get partiallyApprovedCount(): number {
 
+  return this.claims
+    .filter(
+      claim =>
+        claim.status === 'Partially Approved'
+    )
+    .length;
+}
 
   get rejectedCount(): number {
 
@@ -290,4 +310,7 @@ export class Reports implements OnInit {
       )
       .slice(0, 5);
   }
+  get f() {
+  return this.filterForm.controls;
+}
 }

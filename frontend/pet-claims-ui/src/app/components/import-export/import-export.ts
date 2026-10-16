@@ -1,6 +1,7 @@
 import {
   Component,
-  inject
+  inject,
+  ChangeDetectorRef
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -22,6 +23,8 @@ export class ImportExport {
 
   private readonly excelService =
     inject(ExcelService);
+  private readonly cdr =
+  inject(ChangeDetectorRef);
 
   selectedFile: File | null = null;
 
@@ -31,15 +34,14 @@ export class ImportExport {
   importMessage = '';
   importError = false;
 
+  isImporting = false;
+  isExporting = false;
   onFileSelected(event: Event): void {
 
     const input =
       event.target as HTMLInputElement;
 
-    if (
-      input.files &&
-      input.files.length > 0
-    ) {
+    if (input.files && input.files.length > 0) {
 
       const file =
         input.files[0];
@@ -65,16 +67,24 @@ export class ImportExport {
       this.selectedFile = file;
 
       this.importError = false;
-
       this.importMessage = '';
     }
   }
 
   exportClaims(): void {
 
-    this.excelService
-      .exportClaims()
-      .subscribe({
+  if (this.isExporting) {
+    return;
+  }
+
+  this.isExporting = true;
+
+  this.exportError = false;
+  this.exportMessage = '';
+
+  this.excelService
+    .exportClaims()
+    .subscribe({
 
         next: (blob) => {
 
@@ -93,24 +103,33 @@ export class ImportExport {
 
           window.URL.revokeObjectURL(url);
 
-          this.exportError = false;
+         this.isExporting = false;
 
-          this.exportMessage =
-            'Claims exported successfully.';
+this.exportError = false;
+
+this.exportMessage =
+  'Claims exported successfully.';
+    this.cdr.detectChanges();
         },
 
-        error: () => {
+       error: () => {
 
-          this.exportError = true;
+  this.isExporting = false;
 
-          this.exportMessage =
-            'Export failed.';
-        }
+  this.exportError = true;
 
+  this.exportMessage =
+    'Export failed.';
+      this.cdr.detectChanges(); 
+}
       });
   }
 
   importClaims(): void {
+
+    if (this.isImporting) {
+      return;
+    }
 
     if (!this.selectedFile) {
 
@@ -122,26 +141,49 @@ export class ImportExport {
       return;
     }
 
+    this.isImporting = true;
+
+    this.importError = false;
+
+    this.importMessage = '';
+
     this.excelService
       .importClaims(this.selectedFile)
       .subscribe({
 
         next: (response: any) => {
 
-          this.importError = false;
+  this.isImporting = false;
 
-          this.importMessage =
-            response.message;
-        },
+  this.importError = false;
 
+  this.importMessage =
+    response?.message ??
+    'Claims imported successfully.';
+
+  this.selectedFile = null;
+
+  this.cdr.detectChanges();
+},
         error: (error) => {
 
-          this.importError = true;
+  this.isImporting = false;
 
-          this.importMessage =
-            error?.error?.message ??
-            'Import failed.';
-        }
+
+  this.importError = true;
+
+  this.importMessage =
+    error?.error?.message ??
+    'Import failed.';
+
+  this.selectedFile = null;
+
+  this.cdr.detectChanges();
+
+  console.log('Loading:', this.isImporting);
+  console.log('Error:', this.importError);
+  console.log('Message:', this.importMessage);
+}
 
       });
   }

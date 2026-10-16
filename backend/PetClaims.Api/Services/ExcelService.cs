@@ -43,30 +43,67 @@ if (worksheet == null)
 }
 
             var importedCount = 0;
-
+            var importedInvoices = new HashSet<string>();
             foreach (var row in worksheet.RowsUsed().Skip(1))
             {
                 var policyNumber =
                     row.Cell(1).GetString().Trim();
+if (string.IsNullOrWhiteSpace(policyNumber))
+{
+    throw new BusinessException(
+        "Policy Number is required.");
+}
 
-                var treatmentDate =
-                    row.Cell(2).GetDateTime();
-
+if (!row.Cell(2).TryGetValue<DateTime>(out var treatmentDate))
+{
+    throw new BusinessException(
+        "Valid Treatment Date is required.");
+}
                 var clinic =
                     row.Cell(3).GetString().Trim();
 
+                    if (string.IsNullOrWhiteSpace(clinic))
+{
+    throw new BusinessException(
+        "Clinic is required.");
+}
+
                 var diagnosis =
                     row.Cell(4).GetString().Trim();
-
+if (string.IsNullOrWhiteSpace(diagnosis))
+{
+    throw new BusinessException(
+        "Diagnosis is required.");
+}
                 var treatmentDescription =
                     row.Cell(5).GetString().Trim();
 
-                var claimedAmount =
-                    row.Cell(6).GetValue<decimal>();
+if (string.IsNullOrWhiteSpace(treatmentDescription))
+{
+    throw new BusinessException(
+        "Treatment Description is required.");
+}
+
+if (!row.Cell(6).TryGetValue<decimal>(out var claimedAmount))
+{
+    throw new BusinessException(
+        "Valid Claimed Amount is required.");
+}
+
 
                 var invoiceNumber =
                     row.Cell(7).GetString().Trim();
+if (string.IsNullOrWhiteSpace(invoiceNumber))
+{
+    throw new BusinessException(
+        "Invoice Number is required.");
+}
 
+if (!importedInvoices.Add(invoiceNumber))
+{
+    throw new DuplicateInvoiceException(
+        $"Duplicate invoice {invoiceNumber} found in uploaded file.");
+}
                 var documentName =
                     row.Cell(8).GetString().Trim();
                 
@@ -116,6 +153,12 @@ if (worksheet == null)
                     throw new BusinessException(
                         "Claimed amount must be greater than zero.");
                 }
+
+                if (claimedAmount <= policy.Deductible)
+{
+    throw new BusinessException(
+        $"Claimed amount must be greater than the deductible amount of {policy.Deductible}.");
+}
 
                 // ------------------------------------------
                 // Duplicate Invoice
@@ -203,7 +246,7 @@ if (worksheet == null)
 
             return importedCount;
         }
-
+        
         // --------------------------------------------------
         // EXPORT DATABASE TO EXCEL
         // --------------------------------------------------

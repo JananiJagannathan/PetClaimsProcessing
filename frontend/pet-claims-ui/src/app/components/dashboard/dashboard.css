@@ -317,6 +317,11 @@ td {
   border-bottom: 1px solid #eef2f7;
 }
 
+tbody tr {
+  transition:
+    background 0.2s ease;
+}
+
 tbody tr:hover {
   background: #f8fafc;
 }
@@ -373,6 +378,22 @@ tbody tr:hover {
   color: #0e7490;
 }
 
+.card,
+.amount-card,
+.claims-section {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.card:hover,
+.amount-card:hover,
+.claims-section:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.1);
+}
 
 /* REVIEW BUTTON */
 
@@ -394,14 +415,18 @@ tbody tr:hover {
 
   transition:
     background 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
-
 .review-button:hover {
   background: #1d4ed8;
 
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 16px rgba(37, 99, 235, 0.3);
 }
+
 
 
 /* MESSAGE */

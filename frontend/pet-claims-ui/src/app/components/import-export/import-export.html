@@ -6,9 +6,8 @@
 
       <a
         routerLink="/dashboard"
-        class="back-link"
-      >
-        ← 
+        class="back-link">
+        ←
       </a>
 
       <h1>
@@ -25,88 +24,113 @@
 
   <div class="layout">
 
-        <!-- IMPORT -->
-    <section class="card">
+    <!-- IMPORT -->
 
-      <h2>
-        Import Claims
-      </h2>
+  <section class="card">
 
-      <p>
-        Upload only .xlsx Excel files.
-      </p>
+  <h2>
+    Import Claims
+  </h2>
 
-      <input
-        type="file"
-        accept=".xlsx"
-        (change)="onFileSelected($event)"
-      />
+  <p>
+    Upload only .xlsx Excel files.
+  </p>
 
-      @if (importMessage && importError) {
+  <input
+    type="file"
+    accept=".xlsx"
+    (change)="onFileSelected($event)"
+  />
 
-        <small class="validation-error">
-          {{ importMessage }}
-        </small>
+  <button
+    type="button"
+    class="import-button"
+    (click)="importClaims()"
+    [disabled]="isImporting">
 
-      }
+    @if (isImporting) {
+      Importing...
+    } @else {
+      Import Claims
+    }
 
-      <button
-        type="button"
-        class="import-button"
-        (click)="importClaims()"
-      >
-        Import Claims
-      </button>
+  </button>
 
-      @if (importMessage && !importError) {
+ 
 
-        <div class="success-message">
-          {{ importMessage }}
-        </div>
+  @if (isImporting) {
 
-      }
+    <div class="success-message">
+      Importing claims... Please wait.
+    </div>
 
-    </section>
+  }
+
+  @if (importError) {
+
+    <div class="validation-error">
+      {{ importMessage }}
+    </div>
+
+  }
+
+  @if (!importError && !isImporting && importMessage) {
+
+    <div class="success-message">
+      {{ importMessage }}
+    </div>
+
+  }
+
+</section>
     <!-- EXPORT -->
+<!-- EXPORT -->
 
-    <section class="card">
+<section class="card">
 
-      <h2>
-        Export Claims
-      </h2>
+  <h2>
+    Export Claims
+  </h2>
 
-      <p>
-        Download all claims as an Excel file.
-      </p>
+  <p>
+    Download all claims as an Excel file.
+  </p>
 
-      <button
-        type="button"
-        class="export-button"
-        (click)="exportClaims()"
-      >
-        Export Claims
-      </button>
+  <button
+    type="button"
+    class="export-button"
+    (click)="exportClaims()"
+    [disabled]="isExporting">
 
-      @if (exportMessage) {
+    @if (isExporting) {
+      Exporting...
+    } @else {
+      Export Claims
+    }
 
-        <div
-          [class.validation-error]="exportError"
-          [class.success-message]="!exportError"
-        >
-          {{ exportMessage }}
-        </div>
+  </button>
 
-      }
+  @if (isExporting) {
 
-    </section>
+    <div class="success-message">
+      Exporting claims... Please wait.
+    </div>
 
-  
+  }
 
-  </div>
+  @if (exportMessage) {
 
-  <div class="footer-action">
+    <div
+      [class.validation-error]="exportError"
+      [class.success-message]="!exportError">
 
+      {{ exportMessage }}
 
+    </div>
+
+  }
+
+</section>
 
   </div>
 

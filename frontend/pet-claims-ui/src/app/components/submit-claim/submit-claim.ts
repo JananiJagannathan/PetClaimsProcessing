@@ -361,7 +361,15 @@ export class SubmitClaim {
 
       return;
     }
+if (
+  Number(this.f.claimedAmount.value) <=
+  this.policy.deductible
+) {
+  this.submitError =
+    `Claimed amount must be greater than the deductible amount of ${this.policy.deductible}.`;
 
+  return;
+}
 
     // -----------------------------------------------
     // CREATE REQUEST
